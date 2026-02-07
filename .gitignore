@@ -34,3 +34,7 @@ screenshot*.jpg
 *.jpg
 !app/src/main/res/**/*.png
 !app/src/main/res/**/*.jpg
+
+# Store assets and branding (not part of open source release)
+store-assets/
+highmark-ssh-logo*

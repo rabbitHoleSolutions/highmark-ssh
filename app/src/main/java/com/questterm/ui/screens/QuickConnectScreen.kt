@@ -60,7 +60,7 @@ fun QuickConnectScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Text(
-                text = "QuestTerm",
+                text = "Highmark SSH",
                 style = MaterialTheme.typography.titleLarge,
                 color = MaterialTheme.colorScheme.primary,
             )

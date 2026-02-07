@@ -10,20 +10,20 @@ Add tabbed SSH sessions (each tab connects to any server independently) and an S
 
 ### Core change: Replace companion object with SessionManager
 
-**New: `app/src/main/java/com/highmark-ssh/session/SessionManager.kt`** (Hilt singleton)
+**New: `app/src/main/java/com/questterm/session/SessionManager.kt`** (Hilt singleton)
 - `_tabs: MutableStateFlow<List<TabSession>>` — all open sessions
 - `_activeTabId: MutableStateFlow<String?>` — currently visible tab
 - `activeTab: StateFlow<TabSession?>` — derived from tabs + activeTabId
 - Methods: `addTab()`, `removeTab()`, `switchTab()`
 
-**New: `app/src/main/java/com/highmark-ssh/session/TabSession.kt`**
+**New: `app/src/main/java/com/questterm/session/TabSession.kt`**
 ```kotlin
 data class TabSession(
     val id: String,           // UUID
     val label: String,        // "user@host"
     val sshSession: SshSession,
     val terminalSession: SshTerminalSession,
-    val viewClient: Highmark SSHViewClient,
+    val viewClient: QuestTermViewClient,
 )
 ```
 
@@ -41,16 +41,16 @@ Replace the two-route navigation (QuickConnect ↔ Terminal) with a single `Term
 +----------------------------------------------+
 ```
 
-**New: `app/src/main/java/com/highmark-ssh/ui/screens/TerminalHostScreen.kt`**
+**New: `app/src/main/java/com/questterm/ui/screens/TerminalHostScreen.kt`**
 - Composes TabBar + TerminalContent + QuickConnectDialog
 - Auto-shows QuickConnect dialog when no tabs exist
 - Injects TerminalViewModel and QuickConnectViewModel
 
-**New: `app/src/main/java/com/highmark-ssh/ui/components/TabBar.kt`**
+**New: `app/src/main/java/com/questterm/ui/components/TabBar.kt`**
 - `ScrollableTabRow` with tab label + close button per tab
 - "+" button opens QuickConnect dialog
 
-**New: `app/src/main/java/com/highmark-ssh/ui/components/TerminalContent.kt`**
+**New: `app/src/main/java/com/questterm/ui/components/TerminalContent.kt`**
 - Extracted from current TerminalScreen.kt
 - `AndroidView` wrapping TerminalView
 - `update` lambda handles tab switching: re-attaches viewClient and session
@@ -71,11 +71,11 @@ Replace the two-route navigation (QuickConnect ↔ Terminal) with a single `Term
 ### Tab switching mechanics
 
 When switching tabs, the `update` lambda on `AndroidView`:
-1. Detaches old tab's `Highmark SSHViewClient` from the `TerminalView`
-2. Attaches new tab's `Highmark SSHViewClient` via `viewClient.attachView(view)`
+1. Detaches old tab's `QuestTermViewClient` from the `TerminalView`
+2. Attaches new tab's `QuestTermViewClient` via `viewClient.attachView(view)`
 3. Calls `view.attachSession(newSession)` which sets the emulator and triggers redraw
 
-Each `Highmark SSHViewClient` holds a nullable `terminalView` ref — only the active tab's client should have a non-null ref.
+Each `QuestTermViewClient` holds a nullable `terminalView` ref — only the active tab's client should have a non-null ref.
 
 ### Build order (each step compiles)
 
@@ -99,22 +99,22 @@ ConnectBot sshlib already includes `SFTPv3Client`. It can share the same `Connec
 
 ### New files
 
-**`app/src/main/java/com/highmark-ssh/ssh/SftpClient.kt`** — Kotlin coroutine wrapper:
+**`app/src/main/java/com/questterm/ssh/SftpClient.kt`** — Kotlin coroutine wrapper:
 - `open()` / `close()` — create/destroy `SFTPv3Client` from `SshSession.connection`
 - `listDirectory(path)` → `List<SftpEntry>` — sorted, no `.`/`..`
 - `downloadFile(remotePath, localFile, onProgress)`
 - `uploadFile(localFile, remotePath, onProgress)`
 - `mkdir()`, `delete()`, `rmdir()`, `rename()`, `canonicalPath()`
 
-**`app/src/main/java/com/highmark-ssh/ssh/SftpEntry.kt`** — data class:
+**`app/src/main/java/com/questterm/ssh/SftpEntry.kt`** — data class:
 - name, size, modifiedTime, isDirectory, isSymlink, permissions
 
-**`app/src/main/java/com/highmark-ssh/ui/screens/SftpViewModel.kt`**:
+**`app/src/main/java/com/questterm/ui/screens/SftpViewModel.kt`**:
 - currentPath, entries, isLoading, error, transferProgress, isPaneOpen
 - `openSftp()`, `navigateTo()`, `navigateUp()`, `togglePane()`
 - Resets when tab switches
 
-**`app/src/main/java/com/highmark-ssh/ui/components/SftpPane.kt`**:
+**`app/src/main/java/com/questterm/ui/components/SftpPane.kt`**:
 - Path breadcrumb bar with up-button
 - `LazyColumn` of file entries (icon, name, size, date)
 - Tap directory → navigate into it

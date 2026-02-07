@@ -52,7 +52,7 @@ Feature requests are welcome! Please:
 ### Initial Setup
 ```bash
 # Clone your fork
-git clone https://github.com/yourusername/highmark-ssh.git
+git clone https://github.com/<your-username>/highmark-ssh.git
 cd highmark-ssh
 
 # Configure JAVA_HOME
@@ -110,7 +110,7 @@ git push origin feature/your-feature-name
 
 ### File Organization
 ```
-app/src/main/java/com/highmark-ssh/
+app/src/main/java/com/questterm/
 ├── data/          # Data models and storage
 ├── session/       # Session management
 ├── ssh/           # SSH connection logic

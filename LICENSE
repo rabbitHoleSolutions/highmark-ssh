@@ -9,7 +9,7 @@ All original code written specifically for Highmark SSH (excluding Termux termin
 ```
 MIT License
 
-Copyright (c) 2026 Rabbit Hole Solutions
+Copyright (c) 2026 Rabbit Hole Solutions Inc.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -41,6 +41,10 @@ See: https://github.com/termux/termux-app/blob/master/LICENSE
 - **ConnectBot SSHLib** (Apache License 2.0): https://github.com/connectbot/sshlib
 - **Gson** (Apache License 2.0): https://github.com/google/gson
 - **Android Jetpack Libraries** (Apache License 2.0): https://developer.android.com/jetpack
+
+## Trademarks
+
+The "Highmark SSH" name and the Highmark SSH rabbit logo are trademarks of Rabbit Hole Solutions Inc. These trademarks are not licensed under the MIT, GPL, or any other open source license. You may not use the Highmark SSH name or logo in derivative works, forks, or distributions without prior written permission from Rabbit Hole Solutions Inc.
 
 ---
 

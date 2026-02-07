@@ -5,6 +5,7 @@ A native SSH terminal emulator for Meta Quest headsets, bringing full-featured r
 ## Features
 
 ### Core Functionality
+
 - **Native SSH Client** - Direct SSH connections to remote servers
 - **Full Terminal Emulation** - VT-100 compatible terminal via Termux terminal-emulator
 - **Multi-Tab Sessions** - Run multiple SSH sessions simultaneously with tab management
@@ -14,6 +15,7 @@ A native SSH terminal emulator for Meta Quest headsets, bringing full-featured r
 - **Encrypted Password Storage** - AES-256-GCM encryption via Android Keystore (hardware-backed)
 
 ### Quest-Optimized UX
+
 - **2D Panel Mode** - Comfortable flat panel interface in VR
 - **Landscape Orientation** - Optimized for Quest's display format
 - **Controller Scroll Support** - Native VR controller wheel scrolling
@@ -21,6 +23,7 @@ A native SSH terminal emulator for Meta Quest headsets, bringing full-featured r
 - **Edge-to-Edge Display** - Maximizes usable terminal space
 
 ### Advanced Features
+
 - **Username@Host Parsing** - Paste `user@host:port` format for quick fill
 - **Per-Connection Password Memory** - Choose which passwords to remember
 - **Host Key Change Detection** - Warns about potential MITM attacks
@@ -38,9 +41,11 @@ Minimum: Android 10 (API 29)
 ## Installation
 
 ### From Meta Quest Store
-*(Coming soon)*
+
+_(Coming soon)_
 
 ### Sideload (Development)
+
 1. Enable Developer Mode on your Quest headset
 2. Download the latest APK from [Releases](../../releases)
 3. Install via ADB:
@@ -51,6 +56,7 @@ Minimum: Android 10 (API 29)
 ## Usage
 
 ### First Connection
+
 1. Launch Highmark SSH from your Quest app library
 2. Enter your SSH server details:
    - **Host**: Server hostname or IP address
@@ -63,29 +69,34 @@ Minimum: Android 10 (API 29)
 6. Accept the key to connect
 
 ### Quick Connect
+
 - **Paste Format**: Type or paste `username@host:port` in the Host field - username and port will auto-fill
 - **Saved Connections**: Click any saved connection to auto-fill the form
 - **Favorites**: Star frequently-used connections to keep them permanently
 
 ### Multi-Tab Sessions
+
 - **New Tab**: Click the "+" button in the tab bar
 - **Switch Tabs**: Click on any tab label
 - **Close Tab**: Click the "X" icon on a tab
 - Tabs persist until closed or app restart
 
 ### Scrolling
+
 - Use your VR controller's scroll wheel to navigate terminal history
 - Scroll accumulates smoothly for precise control
 
 ## Build from Source
 
 ### Prerequisites
+
 - Android SDK (API 34+)
 - Java 17 or higher
 - Gradle 8.x
 - Meta Quest Developer Hub (for deployment)
 
 ### Build Instructions
+
 ```bash
 # Clone repository
 git clone https://github.com/rabbitHoleSolutions/highmark-ssh.git
@@ -105,8 +116,9 @@ adb install -r app/build/outputs/apk/debug/app-debug.apk
 ```
 
 ### Project Structure
+
 ```
-app/src/main/java/com/highmark-ssh/
+app/src/main/java/com/questterm/
 ├── data/               # Connection profiles and history storage
 ├── session/            # Multi-tab session management
 ├── ssh/                # SSH connection and encryption
@@ -117,6 +129,7 @@ app/src/main/java/com/highmark-ssh/
 ## Security
 
 ### Credential Storage
+
 - Passwords encrypted with **AES-256-GCM**
 - Encryption keys stored in **Android Keystore** (hardware-backed on Quest)
 - Automatic IV generation prevents replay attacks
@@ -124,12 +137,14 @@ app/src/main/java/com/highmark-ssh/
 - Old plaintext credentials migrated automatically
 
 ### SSH Host Verification
+
 - **Trust-on-First-Use (TOFU)** model
 - Host keys stored in SharedPreferences with SHA-256 fingerprints
 - Warns if host key changes (potential MITM attack)
 - User must explicitly accept changed keys
 
 ### Network Permissions
+
 - `INTERNET` - Required for SSH connections
 - `ACCESS_NETWORK_STATE` - Check network availability
 - `ACCESS_WIFI_STATE` - WiFi status detection
@@ -137,7 +152,9 @@ app/src/main/java/com/highmark-ssh/
 **No tracking, no analytics, no external servers.**
 
 ## Privacy
+
 Highmark SSH does not:
+
 - Collect any user data
 - Send any telemetry or analytics
 - Connect to any servers except your SSH hosts
@@ -146,6 +163,7 @@ Highmark SSH does not:
 All data stays on your device.
 
 ## Known Limitations
+
 - SSH key authentication not yet supported (password only)
 - SFTP file transfers not yet implemented
 - No port forwarding support
@@ -154,15 +172,18 @@ All data stays on your device.
 ## Troubleshooting
 
 ### Connection Issues
+
 - **"Connection refused"**: Verify SSH server is running and port is correct
 - **"Host key changed"**: Your server's SSH key changed - verify it's legitimate before accepting
 - **"Authentication failed"**: Check username/password are correct
 
 ### Display Issues
+
 - **Terminal too small**: App uses landscape mode - ensure Quest is in correct orientation
 - **Text not visible**: Check Quest brightness settings
 
 ### Performance Issues
+
 - **Laggy input**: Close unused tabs to free resources
 - **Scroll stuttering**: Try smaller scroll gestures
 
@@ -178,10 +199,10 @@ All data stays on your device.
 
 This project uses a dual-license approach:
 
-- **Custom Code** (Highmark SSH-specific): MIT License (see [LICENSE-MIT](LICENSE-MIT))
-- **Termux Terminal Emulator Integration**: GPL v3 (see [LICENSE-GPL](LICENSE-GPL))
+- **Custom Code** (Highmark SSH-specific): MIT License
+- **Termux Terminal Emulator Integration**: GPL v3
 
-When using or modifying this project, please respect both licenses.
+See [LICENSE](LICENSE) for full details. When using or modifying this project, please respect both licenses.
 
 ## Contributing
 
@@ -190,6 +211,7 @@ Contributions welcome! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guideli
 ## Roadmap
 
 ### Planned Features (Phase 3B+)
+
 - SSH key authentication (ED25519, RSA)
 - SFTP file browser and transfers
 - Local port forwarding
@@ -198,6 +220,7 @@ Contributions welcome! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guideli
 - Saved session profiles with custom labels
 
 ### Ideas for Future
+
 - Multi-window VR layout (floating terminals)
 - Gesture-based shortcuts
 - Command history search
@@ -211,9 +234,11 @@ Contributions welcome! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guideli
 
 ## Credits
 
-Created by [@insectile](https://github.com/insectile) for the Meta Quest platform.
+Created by [@jasonburrows](https://github.com/jasonburrows) for the Meta Quest platform.
 
 Built with ❤️ for the VR developer community.
+
+## Hi Mark!
 
 ---
 

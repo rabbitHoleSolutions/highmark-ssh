@@ -83,7 +83,7 @@ class QuestTermViewClient(
 
     override fun onCopyTextToClipboard(session: TerminalSession?, text: String) {
         val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-        clipboard.setPrimaryClip(ClipData.newPlainText("QuestTerm", text))
+        clipboard.setPrimaryClip(ClipData.newPlainText("Highmark SSH", text))
     }
 
     override fun onPasteTextFromClipboard(session: TerminalSession?) {}
