@@ -1,5 +1,6 @@
 package com.questterm.ui.components
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -16,6 +17,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -25,6 +27,7 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.ui.text.font.FontFamily
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.questterm.R
 import com.questterm.data.ConnectionProfile
 import com.questterm.ui.screens.HostKeyPrompt
 import com.questterm.ui.screens.QuickConnectViewModel
@@ -60,10 +63,15 @@ fun QuickConnectDialog(
                 .fillMaxWidth(0.95f)
                 .fillMaxHeight(0.8f),
         ) {
-            Row(
+            Column(
                 modifier = Modifier
                     .padding(24.dp)
                     .fillMaxSize(),
+            ) {
+            Row(
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(16.dp),
             ) {
                 // Left side: Saved connections list
@@ -206,6 +214,27 @@ fun QuickConnectDialog(
                         }
                     }
                 }
+            }
+            }
+
+            // Branding
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.logo_company),
+                    contentDescription = "Rabbit Hole Solutions",
+                    modifier = Modifier.size(36.dp),
+                    alpha = 0.5f,
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = "\u00a9 2026 Rabbit Hole Solutions Inc.",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
+                )
             }
         }
         }
