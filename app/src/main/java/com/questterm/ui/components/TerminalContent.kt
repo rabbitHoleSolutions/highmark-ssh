@@ -1,6 +1,8 @@
 package com.questterm.ui.components
 
+import android.content.Context
 import android.graphics.Typeface
+import android.view.inputmethod.InputMethodManager
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -54,9 +56,11 @@ fun TerminalContent(
                         view.attachSession(session)
                     }
 
-                    // Request focus after update
+                    // Request focus and show keyboard after update
                     view.post {
                         view.requestFocus()
+                        val imm = view.context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                        imm.showSoftInput(view, InputMethodManager.SHOW_IMPLICIT)
                     }
                 },
                 modifier = Modifier.fillMaxSize().clipToBounds(),

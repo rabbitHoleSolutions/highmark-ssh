@@ -25,6 +25,7 @@ Thumbs.db
 # Secrets
 *.jks
 *.keystore
+keystore.properties
 google-services.json
 
 # Screenshots (may contain sensitive data)

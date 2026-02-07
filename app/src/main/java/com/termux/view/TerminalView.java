@@ -317,6 +317,37 @@ public final class TerminalView extends View {
             }
 
             @Override
+            public boolean sendKeyEvent(KeyEvent event) {
+                // Flush any composing text to the terminal before processing key events.
+                // This fixes the ordering issue where the Quest VR keyboard sends Enter
+                // before committing composed text, causing "ll<Enter>" to arrive as
+                // <Enter> then "ll".
+                if (event.getAction() == KeyEvent.ACTION_DOWN) {
+                    Editable content = getEditable();
+                    if (content.length() > 0) {
+                        sendTextToTerminal(content);
+                        content.clear();
+                        super.finishComposingText();
+                    }
+                }
+                return super.sendKeyEvent(event);
+            }
+
+            @Override
+            public boolean performEditorAction(int actionCode) {
+                // When the IME submit button is pressed, flush composing text first,
+                // then send Enter (carriage return) to the terminal.
+                Editable content = getEditable();
+                if (content.length() > 0) {
+                    sendTextToTerminal(content);
+                    content.clear();
+                    super.finishComposingText();
+                }
+                inputCodePoint('\r', false, false);
+                return true;
+            }
+
+            @Override
             public boolean deleteSurroundingText(int leftLength, int rightLength) {
                 if (TERMINAL_VIEW_KEY_LOGGING_ENABLED) {
                     mClient.logInfo(LOG_TAG, "IME: deleteSurroundingText(" + leftLength + ", " + rightLength + ")");

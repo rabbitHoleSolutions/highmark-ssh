@@ -65,11 +65,18 @@ class QuickConnectViewModel @Inject constructor(
     init {
         loadSavedProfiles()
         connectionCache.load()?.let { cached ->
+            // Check if a saved profile exists with a stored password
+            val matchingProfile = _uiState.value.savedProfiles.find {
+                it.host == cached.host &&
+                    it.port.toString() == cached.port &&
+                    it.username == cached.username
+            }
             _uiState.value = _uiState.value.copy(
                 host = cached.host,
                 port = cached.port,
                 username = cached.username,
                 password = cached.password,
+                rememberPassword = matchingProfile?.encryptedPassword != null,
             )
         }
     }

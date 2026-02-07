@@ -6,6 +6,7 @@ import android.content.Context
 import android.util.Log
 import android.view.KeyEvent
 import android.view.MotionEvent
+import android.view.inputmethod.InputMethodManager
 import com.termux.terminal.TerminalSession
 import com.termux.terminal.TerminalSessionClient
 import com.termux.view.ITerminalSessionHost
@@ -36,7 +37,11 @@ class QuestTermViewClient(
     override fun onScale(scale: Float): Float = 1.0f
 
     override fun onSingleTapUp(e: MotionEvent) {
-        terminalView?.requestFocus()
+        terminalView?.let { view ->
+            view.requestFocus()
+            val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            view.post { imm.showSoftInput(view, InputMethodManager.SHOW_IMPLICIT) }
+        }
     }
 
     override fun shouldBackButtonBeMappedToEscape(): Boolean = true
