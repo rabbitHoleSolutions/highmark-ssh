@@ -1,0 +1,3 @@
+-keep class com.trilead.ssh2.** { *; }
+-dontwarn com.trilead.ssh2.**
+-dontwarn org.slf4j.**
