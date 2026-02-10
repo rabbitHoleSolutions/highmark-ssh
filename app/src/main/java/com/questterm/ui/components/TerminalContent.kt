@@ -1,14 +1,11 @@
 package com.questterm.ui.components
 
-import android.content.Context
 import android.graphics.Typeface
-import android.view.inputmethod.InputMethodManager
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.draw.clipToBounds
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -56,12 +53,10 @@ fun TerminalContent(
                         view.attachSession(session)
                     }
 
-                    // Request focus and show keyboard after update
-                    view.post {
-                        view.requestFocus()
-                        val imm = view.context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-                        imm.showSoftInput(view, InputMethodManager.SHOW_IMPLICIT)
-                    }
+                    // Request focus so physical keyboards work immediately.
+                    // Don't force-show the soft keyboard — virtual keyboard users
+                    // can tap the terminal or use the toggle button to summon it.
+                    view.requestFocus()
                 },
                 modifier = Modifier.fillMaxSize().clipToBounds(),
             )

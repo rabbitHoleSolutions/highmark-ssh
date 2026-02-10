@@ -41,10 +41,12 @@ fun TerminalHostScreen(
         }
     }
 
-    // Only register BackHandler when there's actual back functionality
-    // (dialog is showing with tabs) - this makes the back button appear/disappear dynamically
+    // Back button closes dialog if it's open (and tabs exist), or opens it if closed
     BackHandler(enabled = showConnectDialog && tabs.isNotEmpty()) {
         showConnectDialog = false
+    }
+    BackHandler(enabled = !showConnectDialog && tabs.isNotEmpty()) {
+        showConnectDialog = true
     }
 
     // Cleanup on dispose

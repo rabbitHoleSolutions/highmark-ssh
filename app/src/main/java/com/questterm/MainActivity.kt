@@ -6,6 +6,7 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowInsets
+import android.view.inputmethod.InputMethodManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.core.view.WindowCompat
@@ -37,10 +38,31 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        refocusTerminal()
+    }
+
     override fun onWindowFocusChanged(hasFocus: Boolean) {
         super.onWindowFocusChanged(hasFocus)
         if (hasFocus) {
             hideSystemBars()
+            refocusTerminal()
+        }
+    }
+
+    /**
+     * Re-focus the terminal view and rebuild the IME InputConnection.
+     * Called from both onResume (app foregrounded) and onWindowFocusChanged
+     * (Quest system overlay like dimmer dismissed).
+     */
+    private fun refocusTerminal() {
+        findTerminalView(window.decorView)?.let { tv ->
+            tv.requestFocus()
+            tv.post {
+                val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+                imm.restartInput(tv)
+            }
         }
     }
 

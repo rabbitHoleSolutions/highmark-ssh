@@ -230,11 +230,18 @@ fun QuickConnectDialog(
                     alpha = 0.5f,
                 )
                 Spacer(modifier = Modifier.width(8.dp))
-                Text(
-                    text = "\u00a9 2026 Rabbit Hole Solutions Inc.",
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
-                )
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Text(
+                        text = "\u00a9 2026 Rabbit Hole Solutions Inc.",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
+                    )
+                    Text(
+                        text = "github.com/rabbitHoleSolutions/highmark-ssh",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f),
+                    )
+                }
             }
         }
         }
@@ -359,14 +366,15 @@ private fun SavedConnectionItem(
                 }
             }
 
-            Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+            Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
                 IconButton(
                     onClick = onToggleFavorite,
-                    modifier = Modifier.size(32.dp)
+                    modifier = Modifier.size(26.dp)
                 ) {
                     Icon(
                         Icons.Filled.Star,
                         contentDescription = if (profile.isFavorite) "Unfavorite" else "Favorite",
+                        modifier = Modifier.size(16.dp),
                         tint = if (profile.isFavorite)
                             MaterialTheme.colorScheme.primary
                         else
@@ -375,11 +383,12 @@ private fun SavedConnectionItem(
                 }
                 IconButton(
                     onClick = onDelete,
-                    modifier = Modifier.size(32.dp)
+                    modifier = Modifier.size(26.dp)
                 ) {
                     Icon(
                         Icons.Default.Delete,
                         contentDescription = "Delete",
+                        modifier = Modifier.size(16.dp),
                         tint = MaterialTheme.colorScheme.error
                     )
                 }

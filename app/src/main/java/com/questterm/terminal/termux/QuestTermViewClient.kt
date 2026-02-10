@@ -40,11 +40,14 @@ class QuestTermViewClient(
         terminalView?.let { view ->
             view.requestFocus()
             val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            // Restart input to rebuild the InputConnection, then show keyboard
+            // This ensures the keyboard always connects directly to the terminal
+            imm.restartInput(view)
             view.post { imm.showSoftInput(view, InputMethodManager.SHOW_IMPLICIT) }
         }
     }
 
-    override fun shouldBackButtonBeMappedToEscape(): Boolean = true
+    override fun shouldBackButtonBeMappedToEscape(): Boolean = false
 
     override fun shouldEnforceCharBasedInput(): Boolean = false
 
