@@ -18,6 +18,34 @@ class ConnectionHistoryStore @Inject constructor(
     companion object {
         private const val KEY_PROFILE_IDS = "profile_ids"
         private const val PREFIX_PROFILE = "profile_"
+        private const val KEY_SEEDED = "default_connections_seeded"
+    }
+
+    init {
+        seedDefaultsIfNeeded()
+    }
+
+    private fun seedDefaultsIfNeeded() {
+        if (prefs.getBoolean(KEY_SEEDED, false)) return
+        val ids = prefs.getStringSet(KEY_PROFILE_IDS, emptySet()) ?: emptySet()
+        if (ids.isNotEmpty()) {
+            prefs.edit().putBoolean(KEY_SEEDED, true).apply()
+            return
+        }
+
+        val demo = ConnectionProfile(
+            host = "bandit.labs.overthewire.org",
+            port = 2220,
+            username = "bandit0",
+            isFavorite = true,
+        ).withPassword("bandit0")
+
+        val newIds = mutableSetOf(demo.id)
+        prefs.edit()
+            .putStringSet(KEY_PROFILE_IDS, newIds)
+            .putString("$PREFIX_PROFILE${demo.id}", gson.toJson(demo))
+            .putBoolean(KEY_SEEDED, true)
+            .apply()
     }
 
     fun getAllProfiles(): List<ConnectionProfile> {

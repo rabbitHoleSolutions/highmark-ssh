@@ -61,7 +61,6 @@ fun TerminalHostScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .windowInsetsPadding(WindowInsets.systemBars)
     ) {
         if (tabs.isNotEmpty()) {
             TabBar(
