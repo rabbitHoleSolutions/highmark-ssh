@@ -24,6 +24,7 @@ A native SSH terminal emulator for Meta Quest headsets, bringing full-featured r
 
 ### Advanced Features
 
+- **Ed25519 Public Key Authentication** - On-device Ed25519 key pair generation and public key display for passwordless auth
 - **Username@Host Parsing** - Paste `user@host:port` format for quick fill
 - **Per-Connection Password Memory** - Choose which passwords to remember
 - **Host Key Change Detection** - Warns about potential MITM attacks
@@ -50,7 +51,7 @@ _(Coming soon)_
 2. Download the latest APK from [Releases](../../releases)
 3. Install via ADB:
    ```bash
-   adb install -r highmark-ssh-v1.0.0.apk
+   adb install -r highmark-ssh-v1.0.3.apk
    ```
 
 ## Usage
@@ -130,7 +131,7 @@ app/src/main/java/com/questterm/
 
 ### Credential Storage
 
-- Passwords encrypted with **AES-256-GCM**
+- Passwords and generated Ed25519 private keys encrypted with **AES-256-GCM**
 - Encryption keys stored in **Android Keystore** (hardware-backed on Quest)
 - Automatic IV generation prevents replay attacks
 - GCM authentication tag ensures data integrity
@@ -164,7 +165,6 @@ All data stays on your device.
 
 ## Known Limitations
 
-- SSH key authentication not yet supported (password only)
 - SFTP file transfers not yet implemented
 - No port forwarding support
 - Single window/panel only (no multi-window VR layout)
@@ -175,7 +175,7 @@ All data stays on your device.
 
 - **"Connection refused"**: Verify SSH server is running and port is correct
 - **"Host key changed"**: Your server's SSH key changed - verify it's legitimate before accepting
-- **"Authentication failed"**: Check username/password are correct
+- **"Authentication failed"**: Check username/password, or verify the generated public key is added to `~/.ssh/authorized_keys` on your server
 
 ### Display Issues
 
@@ -215,7 +215,7 @@ Contributions welcome! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guideli
 
 ### Planned Features (Phase 3B+)
 
-- SSH key authentication (ED25519, RSA)
+- Additional SSH key formats (RSA, ECDSA)
 - SFTP file browser and transfers
 - Local port forwarding
 - Custom color schemes
@@ -245,5 +245,5 @@ Built with ❤️ for the VR developer community.
 
 ---
 
-**Version**: 1.0.0
-**Last Updated**: February 2026
+**Version**: 1.0.3
+**Last Updated**: September 2026
