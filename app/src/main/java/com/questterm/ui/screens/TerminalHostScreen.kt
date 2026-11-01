@@ -11,9 +11,6 @@ import com.questterm.ui.components.QuickConnectDialog
 import com.questterm.ui.components.TabBar
 import com.questterm.ui.components.TerminalContent
 import kotlinx.coroutines.launch
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.systemBars
-import androidx.compose.foundation.layout.windowInsetsPadding
 
 @Composable
 fun TerminalHostScreen(
