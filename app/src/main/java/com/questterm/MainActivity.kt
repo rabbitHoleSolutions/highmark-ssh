@@ -1,7 +1,11 @@
 package com.questterm
 
+import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import java.util.UUID
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
@@ -34,6 +38,11 @@ class MainActivity : ComponentActivity() {
                 TerminalHostScreen()
             }
         }
+    }
+
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        setIntent(intent)
     }
 
     override fun onResume() {
@@ -98,5 +107,26 @@ class MainActivity : ComponentActivity() {
             }
         }
         return null
+    }
+
+    companion object {
+        const val EXTRA_SESSION_ID = "com.questterm.extra.SESSION_ID"
+        const val EXTRA_AUTOCONNECT_PROFILE_ID = "com.questterm.extra.AUTOCONNECT_PROFILE_ID"
+
+        fun createMultiWindowIntent(
+            context: Context,
+            sessionId: String? = null,
+            profileId: String? = null,
+        ): Intent = Intent(context, MainActivity::class.java).apply {
+            addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT or Intent.FLAG_ACTIVITY_MULTIPLE_TASK)
+            val uriPath = when {
+                sessionId != null -> "session/$sessionId"
+                profileId != null -> "profile/$profileId"
+                else -> "new/${UUID.randomUUID()}"
+            }
+            data = Uri.parse("questterm://window/$uriPath")
+            if (sessionId != null) putExtra(EXTRA_SESSION_ID, sessionId)
+            if (profileId != null) putExtra(EXTRA_AUTOCONNECT_PROFILE_ID, profileId)
+        }
     }
 }

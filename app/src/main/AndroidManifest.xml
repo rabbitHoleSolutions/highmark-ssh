@@ -15,6 +15,7 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:allowBackup="false"
+        android:resizeableActivity="true"
         android:theme="@style/Theme.QuestTerm">
 
         <meta-data
@@ -25,12 +26,20 @@
             android:name=".MainActivity"
             android:exported="true"
             android:screenOrientation="landscape"
+            android:resizeableActivity="true"
+            android:documentLaunchMode="intoExisting"
+            android:maxRecents="3"
             android:configChanges="orientation|screenSize|smallestScreenSize|screenLayout|density|keyboard|keyboardHidden"
-            android:windowSoftInputMode="adjustResize"
-            android:launchMode="singleTask">
+            android:windowSoftInputMode="adjustResize">
+            <layout
+                android:defaultWidth="1280dp"
+                android:defaultHeight="720dp"
+                android:minWidth="640dp"
+                android:minHeight="400dp" />
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="com.oculus.intent.category.2D" />
             </intent-filter>
         </activity>
     </application>
