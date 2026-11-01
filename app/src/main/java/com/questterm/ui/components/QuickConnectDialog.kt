@@ -36,6 +36,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.questterm.R
 import com.questterm.data.AuthMethod
 import com.questterm.data.ConnectionProfile
+import com.questterm.session.SessionManager
 import com.questterm.ui.screens.HostKeyPrompt
 import com.questterm.ui.screens.QuickConnectViewModel
 
@@ -43,6 +44,7 @@ import com.questterm.ui.screens.QuickConnectViewModel
 fun QuickConnectDialog(
     onDismissRequest: () -> Unit,
     onConnected: () -> Unit,
+    windowId: String = SessionManager.DEFAULT_WINDOW_ID,
     viewModel: QuickConnectViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -194,7 +196,7 @@ fun QuickConnectDialog(
                         modifier = Modifier.fillMaxWidth(),
                         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                         keyboardActions = KeyboardActions(
-                            onDone = { viewModel.connect(onConnected) },
+                            onDone = { viewModel.connect(windowId = windowId, onSuccess = onConnected) },
                         ),
                     )
 
@@ -240,7 +242,7 @@ fun QuickConnectDialog(
                     }
 
                     Button(
-                        onClick = { viewModel.connect(onConnected) },
+                        onClick = { viewModel.connect(windowId = windowId, onSuccess = onConnected) },
                         enabled = !uiState.isConnecting,
                         modifier = Modifier.weight(1f),
                     ) {

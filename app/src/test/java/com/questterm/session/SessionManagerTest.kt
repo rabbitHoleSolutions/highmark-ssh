@@ -20,6 +20,7 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
@@ -198,5 +199,67 @@ class SessionManagerTest {
         )
         assertEquals("a-very-long-serve...", longTab.displayLabel)
         assertEquals(20, longTab.displayLabel.length)
+    }
+
+    @Test
+    fun getTabsForWindowFiltersTabsByWindowId() {
+        val tab1 = sessionManager.addTab("tab1", mockk(relaxed = true), mockk(relaxed = true), mockk(relaxed = true), windowId = "window-a")
+        val tab2 = sessionManager.addTab("tab2", mockk(relaxed = true), mockk(relaxed = true), mockk(relaxed = true), windowId = "window-b")
+
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        val windowATabs = sessionManager.getTabsForWindow("window-a").value
+        val windowBTabs = sessionManager.getTabsForWindow("window-b").value
+
+        assertEquals(1, windowATabs.size)
+        assertEquals(tab1, windowATabs.first().id)
+
+        assertEquals(1, windowBTabs.size)
+        assertEquals(tab2, windowBTabs.first().id)
+    }
+
+    @Test
+    fun transferTabToWindowMovesTabBetweenWindowsWithoutDisconnectingSession() {
+        val termSession = mockk<SshTerminalSession>(relaxed = true)
+        val tab = sessionManager.addTab("tab1", mockk(relaxed = true), termSession, mockk(relaxed = true), windowId = "window-1")
+
+        testDispatcher.scheduler.advanceUntilIdle()
+        assertEquals(1, sessionManager.getTabsForWindow("window-1").value.size)
+
+        val success = sessionManager.transferTabToWindow(tab, "window-2")
+        assertTrue(success)
+
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        // Tab moved from window-1 to window-2
+        assertTrue(sessionManager.getTabsForWindow("window-1").value.isEmpty())
+        val window2Tabs = sessionManager.getTabsForWindow("window-2").value
+        assertEquals(1, window2Tabs.size)
+        assertEquals(tab, window2Tabs.first().id)
+
+        // Session was preserved without disconnect
+        coVerify(exactly = 0) { termSession.disconnect() }
+    }
+
+    @Test
+    fun cleanupWindowDisconnectsOnlyTargetWindowTabs() = runTest {
+        val termSession1 = mockk<SshTerminalSession>(relaxed = true)
+        val termSession2 = mockk<SshTerminalSession>(relaxed = true)
+
+        val tab1 = sessionManager.addTab("tab1", mockk(relaxed = true), termSession1, mockk(relaxed = true), windowId = "win-1")
+        val tab2 = sessionManager.addTab("tab2", mockk(relaxed = true), termSession2, mockk(relaxed = true), windowId = "win-2")
+
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        sessionManager.cleanupWindow("win-1")
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        coVerify { termSession1.disconnect() }
+        coVerify(exactly = 0) { termSession2.disconnect() }
+
+        assertTrue(sessionManager.getTabsForWindow("win-1").value.isEmpty())
+        val win2Tabs = sessionManager.getTabsForWindow("win-2").value
+        assertEquals(1, win2Tabs.size)
+        assertEquals(tab2, win2Tabs.first().id)
     }
 }

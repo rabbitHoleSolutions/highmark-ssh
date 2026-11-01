@@ -36,6 +36,7 @@ class MainActivityTest {
     fun `companion object constants match expected intent extra keys`() {
         assertEquals("com.questterm.extra.SESSION_ID", MainActivity.EXTRA_SESSION_ID)
         assertEquals("com.questterm.extra.AUTOCONNECT_PROFILE_ID", MainActivity.EXTRA_AUTOCONNECT_PROFILE_ID)
+        assertEquals("com.questterm.extra.WINDOW_ID", MainActivity.EXTRA_WINDOW_ID)
     }
 
     @Test
@@ -59,7 +60,7 @@ class MainActivityTest {
             anyConstructed<Intent>().putExtra(MainActivity.EXTRA_SESSION_ID, "session-123")
             anyConstructed<Intent>().putExtra(MainActivity.EXTRA_AUTOCONNECT_PROFILE_ID, "profile-456")
         }
-        assertEquals("questterm://window/session/session-123", uriSlot.captured)
+        assertEquals("questterm://session/session-123", uriSlot.captured)
     }
 
     @Test
@@ -85,7 +86,7 @@ class MainActivityTest {
         verify(exactly = 0) {
             anyConstructed<Intent>().putExtra(MainActivity.EXTRA_AUTOCONNECT_PROFILE_ID, any<String>())
         }
-        assertEquals("questterm://window/session/session-abc", uriSlot.captured)
+        assertEquals("questterm://session/session-abc", uriSlot.captured)
     }
 
     @Test
@@ -111,7 +112,7 @@ class MainActivityTest {
         verify(exactly = 0) {
             anyConstructed<Intent>().putExtra(MainActivity.EXTRA_SESSION_ID, any<String>())
         }
-        assertEquals("questterm://window/profile/profile-xyz", uriSlot.captured)
+        assertEquals("questterm://profile/profile-xyz", uriSlot.captured)
     }
 
     @Test
@@ -131,6 +132,28 @@ class MainActivityTest {
         verify(exactly = 0) {
             anyConstructed<Intent>().putExtra(any<String>(), any<String>())
         }
-        assertTrue(uriSlot.captured.startsWith("questterm://window/new/"))
+        assertTrue(uriSlot.captured.startsWith("questterm://new/"))
+    }
+
+    @Test
+    fun `createMultiWindowIntent with windowId sets windowId extra and window URI`() {
+        val context = mockk<Context>()
+        val uriSlot = slot<String>()
+        every { Uri.parse(capture(uriSlot)) } returns mockk(relaxed = true)
+        every { anyConstructed<Intent>().addFlags(any()) } answers { self as Intent }
+        every { anyConstructed<Intent>().putExtra(any<String>(), any<String>()) } answers { self as Intent }
+        every { anyConstructed<Intent>().data = any() } answers { }
+
+        val intent = MainActivity.createMultiWindowIntent(
+            context = context,
+            windowId = "window-target-42",
+        )
+
+        assertNotNull(intent)
+        verify {
+            anyConstructed<Intent>().addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT or Intent.FLAG_ACTIVITY_MULTIPLE_TASK)
+            anyConstructed<Intent>().putExtra(MainActivity.EXTRA_WINDOW_ID, "window-target-42")
+        }
+        assertEquals("questterm://window/window-target-42", uriSlot.captured)
     }
 }

@@ -21,6 +21,7 @@ fun TabBar(
     activeTabId: String?,
     onTabClick: (String) -> Unit,
     onTabClose: (String) -> Unit,
+    onTabPopOut: ((String) -> Unit)? = null,
     onNewTabClick: () -> Unit,
     onKeyboardToggle: () -> Unit,
     onFontDecrease: () -> Unit,
@@ -49,6 +50,19 @@ fun TabBar(
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                     ) {
                         Text(tab.displayLabel)
+                        if (onTabPopOut != null && tabs.size > 1) {
+                            IconButton(
+                                onClick = { onTabPopOut(tab.id) },
+                                modifier = Modifier.size(20.dp),
+                            ) {
+                                Text(
+                                    text = "↗",
+                                    fontSize = 14.sp,
+                                    textAlign = TextAlign.Center,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                )
+                            }
+                        }
                         IconButton(
                             onClick = { onTabClose(tab.id) },
                             modifier = Modifier.size(20.dp),
