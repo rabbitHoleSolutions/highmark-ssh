@@ -62,6 +62,9 @@ class MainActivity : ComponentActivity() {
                         )
                         startActivity(multiWindowIntent)
                     },
+                    onCloseWindow = {
+                        finishAndRemoveTask()
+                    },
                     sessionManager = sessionManager,
                 )
             }
@@ -102,7 +105,7 @@ class MainActivity : ComponentActivity() {
     override fun onDestroy() {
         super.onDestroy()
         if (isFinishing) {
-            lifecycleScope.launch(Dispatchers.IO) {
+            lifecycleScope.launch(Dispatchers.IO + kotlinx.coroutines.NonCancellable) {
                 sessionManager.cleanupWindow(windowId)
             }
         }
