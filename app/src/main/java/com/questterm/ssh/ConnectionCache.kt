@@ -31,8 +31,16 @@ class ConnectionCache @Inject constructor(
             .apply()
     }
 
+    fun clear() {
+        prefs.edit().clear().apply()
+    }
+
     fun load(): CachedConnection? {
         val host = prefs.getString(KEY_HOST, null) ?: return null
+        if (host == "bandit.labs.overthewire.org") {
+            clear()
+            return null
+        }
         val rawPassword = prefs.getString(KEY_PASSWORD, "") ?: ""
         val isEncrypted = prefs.getBoolean(KEY_ENCRYPTED, false)
 

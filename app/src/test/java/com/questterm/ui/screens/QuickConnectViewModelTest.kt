@@ -99,6 +99,41 @@ class QuickConnectViewModelTest {
     }
 
     @Test
+    fun initWithoutCachePresentsEmptyMaskEvenIfProfilesExist() {
+        every { connectionHistory.getAllProfiles() } returns listOf(
+            ConnectionProfile(
+                host = "saved.server.net",
+                port = 2222,
+                username = "saveduser",
+            )
+        )
+
+        val vm = createViewModel()
+        val state = vm.uiState.value
+        assertEquals("", state.host)
+        assertEquals("22", state.port)
+        assertEquals("", state.username)
+        assertEquals("", state.password)
+    }
+
+    @Test
+    fun initWithBanditCachedConnectionIgnoresBanditAndPresentsEmptyMask() {
+        every { connectionCache.load() } returns CachedConnection(
+            host = "bandit.labs.overthewire.org",
+            port = "2220",
+            username = "bandit0",
+            password = "bandit0",
+        )
+
+        val vm = createViewModel()
+        val state = vm.uiState.value
+        assertEquals("", state.host)
+        assertEquals("22", state.port)
+        assertEquals("", state.username)
+        assertEquals("", state.password)
+    }
+
+    @Test
     fun updateHostWithPlainHostnameSetsHost() {
         viewModel.updateHost("myhost.example.com")
         val state = viewModel.uiState.value

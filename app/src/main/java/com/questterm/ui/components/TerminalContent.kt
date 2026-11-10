@@ -79,7 +79,7 @@ fun TerminalContent(
                     view.requestFocus()
                 },
                 onRelease = { view ->
-                    (view.getCurrentSession()?.client as? QuestTermViewClient)?.detachView()
+                    ((view.getCurrentSession() as? SshTerminalSession)?.client as? QuestTermViewClient)?.detachView()
                 },
                 modifier = Modifier.fillMaxSize().clipToBounds(),
             )

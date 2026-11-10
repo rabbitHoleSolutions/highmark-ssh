@@ -59,7 +59,7 @@ fun TabBar(
                                     text = "↗",
                                     fontSize = 14.sp,
                                     textAlign = TextAlign.Center,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    color = LocalContentColor.current,
                                 )
                             }
                         }

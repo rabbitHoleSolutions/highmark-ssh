@@ -76,10 +76,10 @@ class MainActivity : ComponentActivity() {
         outState.putString(KEY_WINDOW_ID, windowId)
     }
 
-    override fun onNewIntent(intent: Intent?) {
+    override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         setIntent(intent)
-        intent?.let { handleSessionIntent(it) }
+        handleSessionIntent(intent)
     }
 
     private fun handleSessionIntent(targetIntent: Intent) {

@@ -28,18 +28,25 @@ android {
     }
 
     signingConfigs {
-        create("release") {
-            storeFile = file(keystoreProperties["storeFile"] as? String ?: "")
-            storePassword = keystoreProperties["storePassword"] as? String ?: ""
-            keyAlias = keystoreProperties["keyAlias"] as? String ?: ""
-            keyPassword = keystoreProperties["keyPassword"] as? String ?: ""
+        if (keystorePropertiesFile.exists()) {
+            val storeFilePath = keystoreProperties["storeFile"] as? String
+            if (!storeFilePath.isNullOrEmpty()) {
+                create("release") {
+                    storeFile = file(storeFilePath)
+                    storePassword = keystoreProperties["storePassword"] as? String ?: ""
+                    keyAlias = keystoreProperties["keyAlias"] as? String ?: ""
+                    keyPassword = keystoreProperties["keyPassword"] as? String ?: ""
+                }
+            }
         }
     }
 
     buildTypes {
         release {
             isMinifyEnabled = true
-            signingConfig = signingConfigs.getByName("release")
+            signingConfigs.findByName("release")?.let {
+                signingConfig = it
+            }
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
