@@ -108,7 +108,13 @@ class SshSession(
         }
         if (!authResult) {
             conn.close()
-            throw Exception("Authentication failed")
+            // Explicit names: R8 renames the SshAuth classes in release builds.
+            val (method, hint) = when (auth) {
+                is SshAuth.Password -> "password" to "check the username and password"
+                is SshAuth.PrivateKey -> "publickey" to "is this key in ~/.ssh/authorized_keys on the server?"
+            }
+            Log.w("SshSession", "Authentication failed for $username@$host:$port ($method)")
+            throw Exception("Authentication failed: $hint")
         }
         Log.d("SshSession", "Authenticated successfully")
 

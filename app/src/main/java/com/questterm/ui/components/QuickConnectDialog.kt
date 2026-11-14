@@ -220,14 +220,18 @@ fun QuickConnectDialog(
                     )
                 }
 
+                    }
+
+                // Outside the scrolling form so it's never hidden below the fold
+                // (the key panel alone can push it out of view).
                 if (uiState.error != null) {
                     Text(
                         text = uiState.error!!,
                         color = MaterialTheme.colorScheme.error,
                         style = MaterialTheme.typography.bodyMedium,
+                        modifier = Modifier.fillMaxWidth(),
                     )
                 }
-                    }
 
                 Row(
                     modifier = Modifier.fillMaxWidth(),
