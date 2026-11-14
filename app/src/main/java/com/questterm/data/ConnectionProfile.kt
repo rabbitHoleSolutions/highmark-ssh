@@ -32,7 +32,7 @@ data class ConnectionProfile(
     @SerializedName("authMethod")
     val authMethod: AuthMethod = AuthMethod.PASSWORD,
     @SerializedName("encryptedPrivateKey")
-    val encryptedPrivateKey: String? = null,  // PKCS8, encrypted; set when authMethod == KEY
+    val encryptedPrivateKey: String? = null,  // PKCS8, encrypted; kept even when the last login used a password
     @SerializedName("publicKeyRaw")
     val publicKeyRaw: String? = null,  // raw 32-byte ed25519 point, base64 (not sensitive)
     @SerializedName(value = "isFavorite", alternate = ["f"])

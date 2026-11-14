@@ -470,28 +470,40 @@ private fun SavedConnectionItem(
                     profile.displayLabel,
                     style = MaterialTheme.typography.bodyMedium
                 )
-                if (profile.authMethod == AuthMethod.KEY) {
-                    Text(
-                        "🔑 Key saved",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.secondary
-                    )
-                } else if (profile.encryptedPassword != null) {
+                // Show what's actually stored. A profile keeps its key and password
+                // independently, so it can have both regardless of the last method used.
+                val hasKey = !profile.encryptedPrivateKey.isNullOrEmpty() && !profile.publicKeyRaw.isNullOrEmpty()
+                val hasPassword = !profile.encryptedPassword.isNullOrEmpty()
+                if (hasKey || hasPassword) {
                     Row(
-                        horizontalArrangement = Arrangement.spacedBy(4.dp),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Icon(
-                            Icons.Filled.Lock,
-                            contentDescription = "Password saved",
-                            modifier = Modifier.size(12.dp),
-                            tint = MaterialTheme.colorScheme.secondary
-                        )
-                        Text(
-                            "Password saved",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.secondary
-                        )
+                        if (hasKey) {
+                            Text(
+                                "🔑 Key saved",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.secondary
+                            )
+                        }
+                        if (hasPassword) {
+                            Row(
+                                horizontalArrangement = Arrangement.spacedBy(4.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Icon(
+                                    Icons.Filled.Lock,
+                                    contentDescription = "Password saved",
+                                    modifier = Modifier.size(12.dp),
+                                    tint = MaterialTheme.colorScheme.secondary
+                                )
+                                Text(
+                                    "Password saved",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.secondary
+                                )
+                            }
+                        }
                     }
                 }
             }
