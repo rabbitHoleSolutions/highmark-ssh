@@ -184,4 +184,4 @@ We monitor security advisories for all dependencies and update promptly when vul
 
 ---
 
-**Last Updated**: September 2026
+**Last Updated**: November 2026
