@@ -215,6 +215,7 @@ fun QuickConnectDialog(
                 } else {
                     GeneratedKeyPanel(
                         publicKey = uiState.generatedPublicKey,
+                        isSaved = uiState.generatedKeyIsSaved,
                         onRegenerate = viewModel::regenerateKey,
                         onExported = viewModel::onPublicKeyExported,
                     )
@@ -366,6 +367,7 @@ private fun HostKeyDialog(
 @Composable
 private fun GeneratedKeyPanel(
     publicKey: String?,
+    isSaved: Boolean,
     onRegenerate: () -> Unit,
     onExported: () -> Unit,
 ) {
@@ -376,7 +378,11 @@ private fun GeneratedKeyPanel(
         verticalArrangement = Arrangement.spacedBy(6.dp),
     ) {
         Text(
-            "Add this public key to the server's ~/.ssh/authorized_keys:",
+            if (isSaved) {
+                "Saved key for this connection. If it isn't on the server yet, add it to ~/.ssh/authorized_keys:"
+            } else {
+                "New key. Add it to the server's ~/.ssh/authorized_keys:"
+            },
             style = MaterialTheme.typography.bodySmall,
         )
         // Buttons above the key: the long key line pushes anything below it out of
