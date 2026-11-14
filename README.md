@@ -47,7 +47,7 @@ Minimum: Android 10 (API 29)
 
 ### From Meta Quest Store
 
-_(Coming soon)_
+[Get Highmark SSH on the Meta Horizon Store](https://www.meta.com/experiences/highmark-ssh/25701722399438079/)
 
 ### Sideload (Development)
 
