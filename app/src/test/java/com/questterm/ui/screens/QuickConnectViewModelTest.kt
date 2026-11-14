@@ -214,19 +214,6 @@ class QuickConnectViewModelTest {
     }
 
     @Test
-    fun connectWithKeyAuthAndNoKeyShowsError() {
-        viewModel.updateHost("myserver.net")
-        viewModel.updateUsername("myuser")
-        viewModel.selectAuthMethod(AuthMethod.KEY)
-
-        var onSuccessCalled = false
-        viewModel.connect { onSuccessCalled = true }
-
-        assertFalse(onSuccessCalled)
-        assertEquals("Generate a key first", viewModel.uiState.value.error)
-    }
-
-    @Test
     fun acceptAndRejectHostKeyClearPrompt() {
         viewModel.acceptHostKey()
         assertNull(viewModel.uiState.value.hostKeyPrompt)

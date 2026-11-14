@@ -117,7 +117,9 @@ class ConnectionProfileTest {
         assertEquals("legacy-encrypted-pwd", deserialized.encryptedPassword)
         assertTrue(deserialized.isFavorite)
         assertEquals(1690000000000L, deserialized.lastUsedTimestamp)
-        assertEquals(AuthMethod.PASSWORD, deserialized.authMethod)
+        // Legacy JSON has no auth method and Gson bypasses Kotlin defaults, so it's
+        // null here; ConnectionHistoryStore fills in PASSWORD when loading.
+        assertNull(deserialized.authMethod)
     }
 
     @Test
