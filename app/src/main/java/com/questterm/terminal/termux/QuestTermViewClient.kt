@@ -30,8 +30,13 @@ class QuestTermViewClient(
         terminalView = view
     }
 
-    fun detachView() {
-        terminalView = null
+    /**
+     * Forgets [view], but only if it's still the one this client drives. With
+     * multiple windows a session can be re-attached to another window's view
+     * before the old window lets go, and that newer attachment must survive.
+     */
+    fun detachView(view: TerminalView) {
+        if (terminalView === view) terminalView = null
     }
 
     // === TerminalViewClient ===

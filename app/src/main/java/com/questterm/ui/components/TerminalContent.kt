@@ -23,8 +23,10 @@ import com.termux.view.TerminalView
 fun TerminalContent(
     sessionManager: SessionManager,
     modifier: Modifier = Modifier,
+    windowId: String = SessionManager.DEFAULT_WINDOW_ID,
 ) {
-    val activeTab by sessionManager.activeTab.collectAsState()
+    val activeTab by remember(sessionManager, windowId) { sessionManager.activeTabFlow(windowId) }
+        .collectAsState(initial = sessionManager.activeTabIn(windowId))
     val fontSize by sessionManager.fontSize.collectAsState()
     val session = activeTab?.terminalSession
     val viewClient = activeTab?.viewClient
@@ -52,7 +54,7 @@ fun TerminalContent(
                     if (currentSession !== session) {
                         // Detach old viewClient
                         currentSession?.client?.let {
-                            (it as? QuestTermViewClient)?.detachView()
+                            (it as? QuestTermViewClient)?.detachView(view)
                         }
 
                         // Attach new session
@@ -73,6 +75,10 @@ fun TerminalContent(
                     // Don't force-show the soft keyboard — virtual keyboard users
                     // can tap the terminal or use the toggle button to summon it.
                     view.requestFocus()
+                },
+                onRelease = { view ->
+                    ((view.getCurrentSession() as? SshTerminalSession)?.client as? QuestTermViewClient)
+                        ?.detachView(view)
                 },
                 modifier = Modifier.fillMaxSize().clipToBounds(),
             )

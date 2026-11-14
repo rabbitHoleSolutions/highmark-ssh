@@ -36,6 +36,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.questterm.R
 import com.questterm.data.AuthMethod
 import com.questterm.data.ConnectionProfile
+import com.questterm.session.SessionManager
 import com.questterm.ui.screens.HostKeyPrompt
 import com.questterm.ui.screens.QuickConnectViewModel
 
@@ -43,6 +44,7 @@ import com.questterm.ui.screens.QuickConnectViewModel
 fun QuickConnectDialog(
     onDismissRequest: () -> Unit,
     onConnected: () -> Unit,
+    windowId: String = SessionManager.DEFAULT_WINDOW_ID,
     viewModel: QuickConnectViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -194,7 +196,7 @@ fun QuickConnectDialog(
                         modifier = Modifier.fillMaxWidth(),
                         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                         keyboardActions = KeyboardActions(
-                            onDone = { viewModel.connect(onConnected) },
+                            onDone = { viewModel.connect(windowId = windowId, onSuccess = onConnected) },
                         ),
                     )
 
@@ -213,19 +215,24 @@ fun QuickConnectDialog(
                 } else {
                     GeneratedKeyPanel(
                         publicKey = uiState.generatedPublicKey,
+                        isSaved = uiState.generatedKeyIsSaved,
                         onRegenerate = viewModel::regenerateKey,
                         onExported = viewModel::onPublicKeyExported,
                     )
                 }
 
+                    }
+
+                // Outside the scrolling form so it's never hidden below the fold
+                // (the key panel alone can push it out of view).
                 if (uiState.error != null) {
                     Text(
                         text = uiState.error!!,
                         color = MaterialTheme.colorScheme.error,
                         style = MaterialTheme.typography.bodyMedium,
+                        modifier = Modifier.fillMaxWidth(),
                     )
                 }
-                    }
 
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -240,7 +247,7 @@ fun QuickConnectDialog(
                     }
 
                     Button(
-                        onClick = { viewModel.connect(onConnected) },
+                        onClick = { viewModel.connect(windowId = windowId, onSuccess = onConnected) },
                         enabled = !uiState.isConnecting,
                         modifier = Modifier.weight(1f),
                     ) {
@@ -360,6 +367,7 @@ private fun HostKeyDialog(
 @Composable
 private fun GeneratedKeyPanel(
     publicKey: String?,
+    isSaved: Boolean,
     onRegenerate: () -> Unit,
     onExported: () -> Unit,
 ) {
@@ -370,7 +378,11 @@ private fun GeneratedKeyPanel(
         verticalArrangement = Arrangement.spacedBy(6.dp),
     ) {
         Text(
-            "Add this public key to the server's ~/.ssh/authorized_keys:",
+            if (isSaved) {
+                "Saved key for this connection. If it isn't on the server yet, add it to ~/.ssh/authorized_keys:"
+            } else {
+                "New key. Add it to the server's ~/.ssh/authorized_keys:"
+            },
             style = MaterialTheme.typography.bodySmall,
         )
         // Buttons above the key: the long key line pushes anything below it out of
@@ -464,28 +476,38 @@ private fun SavedConnectionItem(
                     profile.displayLabel,
                     style = MaterialTheme.typography.bodyMedium
                 )
-                if (profile.authMethod == AuthMethod.KEY) {
-                    Text(
-                        "🔑 Key saved",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.secondary
-                    )
-                } else if (profile.encryptedPassword != null) {
-                    Row(
-                        horizontalArrangement = Arrangement.spacedBy(4.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(
-                            Icons.Filled.Lock,
-                            contentDescription = "Password saved",
-                            modifier = Modifier.size(12.dp),
-                            tint = MaterialTheme.colorScheme.secondary
-                        )
-                        Text(
-                            "Password saved",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.secondary
-                        )
+                // Show what's actually stored. A profile keeps its key and password
+                // independently, so it can have both regardless of the last method used.
+                val hasKey = !profile.encryptedPrivateKey.isNullOrEmpty() && !profile.publicKeyRaw.isNullOrEmpty()
+                val hasPassword = !profile.encryptedPassword.isNullOrEmpty()
+                if (hasKey || hasPassword) {
+                    // Stacked: side by side they're too cramped in the narrow list.
+                    Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                        if (hasKey) {
+                            Text(
+                                "🔑 Key saved",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.secondary
+                            )
+                        }
+                        if (hasPassword) {
+                            Row(
+                                horizontalArrangement = Arrangement.spacedBy(4.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Icon(
+                                    Icons.Filled.Lock,
+                                    contentDescription = "Password saved",
+                                    modifier = Modifier.size(12.dp),
+                                    tint = MaterialTheme.colorScheme.secondary
+                                )
+                                Text(
+                                    "Password saved",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.secondary
+                                )
+                            }
+                        }
                     }
                 }
             }

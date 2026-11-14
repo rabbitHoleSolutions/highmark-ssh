@@ -40,6 +40,8 @@ data class QuickConnectUiState(
     val authMethod: AuthMethod = AuthMethod.PASSWORD,
     /** The "ssh-ed25519 AAAA... comment" line for the currently generated key, if any. */
     val generatedPublicKey: String? = null,
+    /** True when [generatedPublicKey] is this connection's stored key, false for a fresh unsaved one. */
+    val generatedKeyIsSaved: Boolean = false,
 )
 
 /** Shown when the user needs to accept or reject a host key. */
@@ -81,10 +83,10 @@ class QuickConnectViewModel @Inject constructor(
         return KeyTarget(state.host, state.port.toIntOrNull() ?: 22, state.username)
     }
 
-    private fun setPendingKey(keyPair: KeyPair?, publicKey: String?) {
+    private fun setPendingKey(keyPair: KeyPair?, publicKey: String?, isSaved: Boolean = false) {
         pendingKeyPair = keyPair
         pendingKeyTarget = keyPair?.let { currentTarget() }
-        _uiState.update { it.copy(generatedPublicKey = publicKey) }
+        _uiState.update { it.copy(generatedPublicKey = publicKey, generatedKeyIsSaved = isSaved) }
     }
 
     private val knownHosts: KnownHostsStore
@@ -115,6 +117,10 @@ class QuickConnectViewModel @Inject constructor(
                     port = default.port.toString(),
                     username = default.username,
                     password = default.getDecryptedPassword() ?: "bandit0",
+                    // Match the saved profile. Left false, the first Connect would
+                    // save the profile without its password and every later
+                    // attempt would send a blank one.
+                    rememberPassword = default.encryptedPassword != null,
                 )
             }
         }
@@ -178,7 +184,7 @@ class QuickConnectViewModel @Inject constructor(
         val saved = findSavedProfile()
         val savedKey = saved?.getKeyPair()
         if (savedKey != null) {
-            setPendingKey(savedKey, saved.getOpenSshPublicKey())
+            setPendingKey(savedKey, saved.getOpenSshPublicKey(), isSaved = true)
         } else {
             // Not saved yet: the host may still be half-typed. It's saved when the
             // user copies it, regenerates, or connects.
@@ -243,6 +249,7 @@ class QuickConnectViewModel @Inject constructor(
         ).withGeneratedKey(keyPair)
         connectionHistory.saveProfile(profile, rememberPassword = state.rememberPassword)
         loadSavedProfiles()
+        if (keyPair === pendingKeyPair) _uiState.update { it.copy(generatedKeyIsSaved = true) }
     }
 
     fun selectProfile(profile: ConnectionProfile) {
@@ -260,6 +267,7 @@ class QuickConnectViewModel @Inject constructor(
                 // Only show the public key if its private half actually decrypted
                 // (e.g. not after a Keystore reset), so the UI matches what connect() can use.
                 generatedPublicKey = if (profileKey != null) profile.getOpenSshPublicKey() else null,
+                generatedKeyIsSaved = profileKey != null,
             )
         }
         // Set after the fields above so the key is bound to this profile's target.
@@ -287,7 +295,10 @@ class QuickConnectViewModel @Inject constructor(
         _uiState.value = _uiState.value.copy(hostKeyPrompt = null)
     }
 
-    fun connect(onSuccess: () -> Unit) {
+    fun connect(
+        windowId: String = SessionManager.DEFAULT_WINDOW_ID,
+        onSuccess: () -> Unit,
+    ) {
         val state = _uiState.value
         if (state.host.isBlank() || state.username.isBlank()) {
             _uiState.value = state.copy(error = "Host and username are required")
@@ -358,7 +369,7 @@ class QuickConnectViewModel @Inject constructor(
                     connectionCache.save(state.host, state.port.ifBlank { "22" }, state.username, state.password)
                 }
                 val label = "${state.username}@${state.host}"
-                sessionManager.addTab(label, sshSession, terminalSession, viewClient)
+                sessionManager.addTab(label, sshSession, terminalSession, viewClient, windowId = windowId)
 
                 // Save to connection history
                 val profile = ConnectionProfile(

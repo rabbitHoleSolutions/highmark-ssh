@@ -23,23 +23,30 @@ android {
         applicationId = "com.questterm"
         minSdk = 29
         targetSdk = 34
-        versionCode = 4
-        versionName = "1.0.3"
+        versionCode = 5
+        versionName = "1.0.4"
     }
 
     signingConfigs {
-        create("release") {
-            storeFile = file(keystoreProperties["storeFile"] as? String ?: "")
-            storePassword = keystoreProperties["storePassword"] as? String ?: ""
-            keyAlias = keystoreProperties["keyAlias"] as? String ?: ""
-            keyPassword = keystoreProperties["keyPassword"] as? String ?: ""
+        if (keystorePropertiesFile.exists()) {
+            val storeFilePath = keystoreProperties["storeFile"] as? String
+            if (!storeFilePath.isNullOrEmpty()) {
+                create("release") {
+                    storeFile = file(storeFilePath)
+                    storePassword = keystoreProperties["storePassword"] as? String ?: ""
+                    keyAlias = keystoreProperties["keyAlias"] as? String ?: ""
+                    keyPassword = keystoreProperties["keyPassword"] as? String ?: ""
+                }
+            }
         }
     }
 
     buildTypes {
         release {
             isMinifyEnabled = true
-            signingConfig = signingConfigs.getByName("release")
+            signingConfigs.findByName("release")?.let {
+                signingConfig = it
+            }
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -65,6 +72,10 @@ android {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
             excludes += "/META-INF/versions/9/OSGI-INF/MANIFEST.MF"
         }
+    }
+
+    testOptions {
+        unitTests.isReturnDefaultValues = true
     }
 }
 
@@ -103,4 +114,9 @@ dependencies {
     // Core Android
     implementation(libs.core.ktx)
     implementation(libs.activity.compose)
+
+    // Testing
+    testImplementation(libs.junit)
+    testImplementation(libs.mockk)
+    testImplementation(libs.kotlinx.coroutines.test)
 }

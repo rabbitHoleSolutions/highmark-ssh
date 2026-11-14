@@ -5,6 +5,25 @@ All notable changes to Highmark SSH will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.4] - 2026-11-14
+
+### Added
+- Pop a tab out into its own window with the ↗ button (contributed by @j333c, PR #5, reworked)
+  - The session moves without reconnecting; closing a window disconnects only its own sessions
+  - A popped-out window closes itself when its last tab is closed
+- Unit test suite (JUnit, MockK, coroutines-test) for sessions, profiles and the connect form (contributed by @j333c, PR #5)
+
+### Changed
+- Saved connections show every stored credential ("🔑 Key saved" and/or "Password saved"), not just the last-used method
+- The key panel says whether it's showing the connection's saved key or a new one
+- "Authentication failed" now says what to check (password, or the key in `authorized_keys`)
+
+### Fixed
+- The demo connection lost its saved password after the first connect, so later attempts sent a blank password
+- Connection errors could be hidden below the fold of the connect form, so a failed connect gave no visible feedback
+- Plugging in or unplugging a USB keyboard relaunched the app window, dropping keystrokes until it came back
+- Builds without a release keystore no longer fail (contributed by @j333c, PR #5)
+
 ## [1.0.3] - 2026-09-22
 
 ### Added
@@ -87,23 +106,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [1.0.3] - 2026-09-22
+## [Unreleased]
 
 ### Planned for v1.1.0
-- SSH key authentication (ED25519, RSA, ECDSA)
+- Additional SSH key types (RSA, ECDSA)
 - SFTP file browser integration
 - Port forwarding (local and remote)
 - Custom color schemes
-- Font size adjustment
 - Session profile management
 - Connection groups/folders
 
 ### Future Considerations
-- Multi-window VR layout (floating terminals)
+- Arranged multi-window VR layouts (beyond pop-out panels)
 - Tmux/screen integration
 - Command history search
 - Gesture-based shortcuts
-- Clipboard integration
 
 ---
 
