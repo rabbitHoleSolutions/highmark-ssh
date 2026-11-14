@@ -481,10 +481,8 @@ private fun SavedConnectionItem(
                 val hasKey = !profile.encryptedPrivateKey.isNullOrEmpty() && !profile.publicKeyRaw.isNullOrEmpty()
                 val hasPassword = !profile.encryptedPassword.isNullOrEmpty()
                 if (hasKey || hasPassword) {
-                    Row(
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
+                    // Stacked: side by side they're too cramped in the narrow list.
+                    Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
                         if (hasKey) {
                             Text(
                                 "🔑 Key saved",
