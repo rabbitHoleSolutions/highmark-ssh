@@ -65,7 +65,7 @@ Highmark SSH protects your SSH credentials using:
 3. **No Plaintext Storage**
    - Passwords never stored in plain text
    - Old plaintext credentials migrated automatically
-   - Encrypted blobs stored in SharedPreferences
+   - Private SSH keys (Ed25519) and passwords encrypted via AES-256-GCM and stored in private SharedPreferences
 
 ### SSH Security
 
@@ -108,10 +108,12 @@ Highmark SSH requests minimal permissions:
 
 ### Current Limitations
 
-1. **Password-Only Authentication**
-   - SSH keys not yet supported (planned for v1.1.0)
-   - Passwords are less secure than key-based auth
-   - Consider using strong, unique passwords
+1. **Key Authentication Boundaries**
+   - Supports on-device generated Ed25519 public-key authentication
+   - Importing external private keys (RSA, ECDSA, or custom Ed25519) is not yet supported
+   - Ed25519 private keys are encrypted locally using Android Keystore-backed AES-256-GCM and never leave the device
+   - Public keys may be exported to clipboard or system share for installation into `~/.ssh/authorized_keys`; private keys cannot be exported
+   - When using password authentication, strong and unique passwords should be used
 
 2. **No Multi-Factor Authentication**
    - MFA happens at SSH server level
@@ -124,10 +126,10 @@ Highmark SSH requests minimal permissions:
 
 ### Best Practices for Users
 
-1. **Use Strong Passwords**
-   - Unique passwords for each SSH server
-   - Consider using a password manager
-   - Enable "Remember password" only for trusted servers
+1. **Use Key-Based Authentication When Possible**
+   - Highmark SSH supports on-device Ed25519 key generation
+   - Add your headset's public key to `~/.ssh/authorized_keys` for stronger security than passwords
+   - When using passwords, use strong, unique passwords for each SSH host
 
 2. **Verify Host Keys**
    - Check fingerprints match your server's actual key
@@ -153,7 +155,7 @@ Highmark SSH requests minimal permissions:
 
 ### Planned Security Enhancements (v1.1.0+)
 
-- SSH key authentication (ED25519, RSA, ECDSA)
+- Additional SSH key formats (RSA, ECDSA)
 - SSH agent support
 - Biometric authentication for app access
 - Session timeout/auto-lock
@@ -182,4 +184,4 @@ We monitor security advisories for all dependencies and update promptly when vul
 
 ---
 
-**Last Updated**: February 2026
+**Last Updated**: September 2026
