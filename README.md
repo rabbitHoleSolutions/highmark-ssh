@@ -80,6 +80,7 @@ _(Coming soon)_
 - **New Tab**: Click the "+" button in the tab bar
 - **Switch Tabs**: Click on any tab label
 - **Close Tab**: Click the "X" icon on a tab
+- **Pop Out Tab**: With two or more tabs open, click the "↗" icon to move a tab into its own window. The session stays connected; closing that window disconnects it
 - Tabs persist until closed or app restart
 
 ### Scrolling
@@ -167,7 +168,7 @@ All data stays on your device.
 
 - SFTP file transfers not yet implemented
 - No port forwarding support
-- Single window/panel only (no multi-window VR layout)
+- Pop-out windows are plain panels; no arranged multi-window VR layout yet
 
 ## Troubleshooting
 

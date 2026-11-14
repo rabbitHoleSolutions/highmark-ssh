@@ -21,6 +21,7 @@ fun TabBar(
     activeTabId: String?,
     onTabClick: (String) -> Unit,
     onTabClose: (String) -> Unit,
+    onTabPopOut: ((String) -> Unit)? = null,
     onNewTabClick: () -> Unit,
     onKeyboardToggle: () -> Unit,
     onFontDecrease: () -> Unit,
@@ -49,6 +50,20 @@ fun TabBar(
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                     ) {
                         Text(tab.displayLabel)
+                        // Popping out the only tab would leave this window empty.
+                        if (onTabPopOut != null && tabs.size > 1) {
+                            IconButton(
+                                onClick = { onTabPopOut(tab.id) },
+                                modifier = Modifier.size(20.dp),
+                            ) {
+                                Text(
+                                    text = "↗",
+                                    fontSize = 14.sp,
+                                    textAlign = TextAlign.Center,
+                                    color = LocalContentColor.current,
+                                )
+                            }
+                        }
                         IconButton(
                             onClick = { onTabClose(tab.id) },
                             modifier = Modifier.size(20.dp),

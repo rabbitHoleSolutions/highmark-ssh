@@ -14,24 +14,33 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun TerminalHostScreen(
+    windowId: String = SessionManager.DEFAULT_WINDOW_ID,
+    onPopOutTab: ((String) -> Unit)? = null,
+    onLastTabClosed: () -> Unit = {},
     sessionManager: SessionManager = hiltViewModel<TerminalViewModel>().sessionManager,
 ) {
-    val tabs by sessionManager.tabs.collectAsState()
-    val activeTabId by sessionManager.activeTabId.collectAsState()
-    val activeTab by sessionManager.activeTab.collectAsState()
+    val tabs by remember(sessionManager, windowId) { sessionManager.tabsFlow(windowId) }
+        .collectAsState(initial = sessionManager.tabsIn(windowId))
+    val activeTab by remember(sessionManager, windowId) { sessionManager.activeTabFlow(windowId) }
+        .collectAsState(initial = sessionManager.activeTabIn(windowId))
+    val activeTabId = activeTab?.id
 
     LaunchedEffect(tabs.size) {
-        Log.d("TerminalHostScreen", "Tabs updated: size=${tabs.size}, tabs=$tabs")
+        Log.d("TerminalHostScreen", "Tabs updated for window $windowId: size=${tabs.size}, tabs=$tabs")
     }
     val scope = rememberCoroutineScope()
 
     var showConnectDialog by remember { mutableStateOf(tabs.isEmpty()) }
 
-    // Auto-show dialog when no tabs exist
+    // Auto-show dialog when no tabs exist. A window that had tabs and lost them
+    // all reports it, so a popped-out window can close itself.
+    var hadTabs by remember { mutableStateOf(tabs.isNotEmpty()) }
     LaunchedEffect(tabs.isEmpty()) {
         if (tabs.isEmpty()) {
             showConnectDialog = true
+            if (hadTabs) onLastTabClosed()
         }
+        hadTabs = tabs.isNotEmpty()
     }
 
     // Back button closes dialog if it's open (and tabs exist), or opens it if closed
@@ -40,15 +49,6 @@ fun TerminalHostScreen(
     }
     BackHandler(enabled = !showConnectDialog && tabs.isNotEmpty()) {
         showConnectDialog = true
-    }
-
-    // Cleanup on dispose
-    DisposableEffect(Unit) {
-        onDispose {
-            scope.launch {
-                sessionManager.cleanup()
-            }
-        }
     }
 
     Column(
@@ -65,6 +65,7 @@ fun TerminalHostScreen(
                         sessionManager.removeTab(tabId)
                     }
                 },
+                onTabPopOut = onPopOutTab,
                 onNewTabClick = { showConnectDialog = true },
                 onKeyboardToggle = { activeTab?.viewClient?.toggleKeyboard() },
                 onFontDecrease = { sessionManager.decreaseFontSize() },
@@ -75,6 +76,7 @@ fun TerminalHostScreen(
         TerminalContent(
             sessionManager = sessionManager,
             modifier = Modifier.weight(1f),
+            windowId = windowId,
         )
     }
 
@@ -89,6 +91,7 @@ fun TerminalHostScreen(
             onConnected = {
                 showConnectDialog = false
             },
+            windowId = windowId,
         )
     }
 }
