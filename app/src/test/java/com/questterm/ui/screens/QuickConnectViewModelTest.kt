@@ -7,9 +7,11 @@ import com.questterm.data.ConnectionProfile
 import com.questterm.session.SessionManager
 import com.questterm.ssh.CachedConnection
 import com.questterm.ssh.ConnectionCache
+import com.questterm.ssh.CredentialEncryption
 import com.questterm.ssh.SshConnectionManager
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.mockkObject
 import io.mockk.unmockkAll
 import io.mockk.verify
 import kotlinx.coroutines.Dispatchers
@@ -96,6 +98,26 @@ class QuickConnectViewModelTest {
         assertEquals("2202", state.port)
         assertEquals("cacheduser", state.username)
         assertEquals("cachedpassword", state.password)
+    }
+
+    @Test
+    fun firstLaunchDemoPrefillKeepsSavedPasswordOnConnect() {
+        mockkObject(CredentialEncryption)
+        every { CredentialEncryption.decrypt("enc-bandit0") } returns "bandit0"
+        val demo = ConnectionProfile(
+            host = "bandit.labs.overthewire.org",
+            port = 2220,
+            username = "bandit0",
+            authMethod = AuthMethod.PASSWORD,
+            encryptedPassword = "enc-bandit0",
+        )
+        every { connectionHistory.getAllProfiles() } returns listOf(demo)
+
+        val state = createViewModel().uiState.value
+
+        assertEquals("bandit0", state.password)
+        // Otherwise the first Connect saves the demo profile without its password.
+        assertTrue(state.rememberPassword)
     }
 
     @Test
