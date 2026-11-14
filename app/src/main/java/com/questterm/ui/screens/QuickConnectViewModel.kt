@@ -115,6 +115,10 @@ class QuickConnectViewModel @Inject constructor(
                     port = default.port.toString(),
                     username = default.username,
                     password = default.getDecryptedPassword() ?: "bandit0",
+                    // Match the saved profile. Left false, the first Connect would
+                    // save the profile without its password and every later
+                    // attempt would send a blank one.
+                    rememberPassword = default.encryptedPassword != null,
                 )
             }
         }
