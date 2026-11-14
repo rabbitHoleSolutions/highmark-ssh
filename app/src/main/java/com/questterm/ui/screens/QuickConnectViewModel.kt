@@ -287,7 +287,10 @@ class QuickConnectViewModel @Inject constructor(
         _uiState.value = _uiState.value.copy(hostKeyPrompt = null)
     }
 
-    fun connect(onSuccess: () -> Unit) {
+    fun connect(
+        windowId: String = SessionManager.DEFAULT_WINDOW_ID,
+        onSuccess: () -> Unit,
+    ) {
         val state = _uiState.value
         if (state.host.isBlank() || state.username.isBlank()) {
             _uiState.value = state.copy(error = "Host and username are required")
@@ -358,7 +361,7 @@ class QuickConnectViewModel @Inject constructor(
                     connectionCache.save(state.host, state.port.ifBlank { "22" }, state.username, state.password)
                 }
                 val label = "${state.username}@${state.host}"
-                sessionManager.addTab(label, sshSession, terminalSession, viewClient)
+                sessionManager.addTab(label, sshSession, terminalSession, viewClient, windowId = windowId)
 
                 // Save to connection history
                 val profile = ConnectionProfile(
